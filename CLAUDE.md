@@ -8,6 +8,19 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 > System value = forcing you to think, not helping you record
 
+## 开发命令
+
+```bash
+npm install    # 安装依赖（所有依赖本地安装，不装系统级）
+npm start      # 启动 Electron 开发模式
+npm run build  # 打包为 macOS .app（输出到 dist/）
+```
+
+键盘快捷键（应用内）：
+- `Cmd+Shift+Space`：全局快捷键，从任何应用唤起窗口并聚焦 Inbox 输入框
+- `Cmd+1/2/3/4`：切换视图（工作篮/下一步行动/项目/等待）
+- `Escape`：关闭判定面板
+
 ## Planned Tech Stack
 
 - **Frontend:** Electron (desktop app)
