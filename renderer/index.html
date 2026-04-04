@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Manager</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="app">
+    <!-- 侧边栏 -->
+    <nav id="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-item active" data-view="inbox">
+          <span class="icon">📥</span>
+          <span class="label">工作篮</span>
+          <span class="badge" id="inbox-badge"></span>
+        </div>
+        <div class="sidebar-item" data-view="next-actions">
+          <span class="icon">⚡</span>
+          <span class="label">下一步行动</span>
+          <span class="badge" id="next-badge"></span>
+        </div>
+        <div class="sidebar-item" data-view="projects">
+          <span class="icon">📁</span>
+          <span class="label">项目列表</span>
+          <span class="badge" id="projects-badge"></span>
+        </div>
+        <div class="sidebar-item" data-view="waiting">
+          <span class="icon">⏳</span>
+          <span class="label">等待列表</span>
+          <span class="badge" id="waiting-badge"></span>
+        </div>
+      </div>
+    </nav>
+
+    <!-- 主内容区 -->
+    <main id="content">
+      <!-- 各模块由 JS 渲染 -->
+    </main>
+  </div>
+
+  <!-- 判定面板弹层 -->
+  <div class="modal-overlay hidden" id="decision-modal">
+    <div class="modal-card" id="decision-card">
+      <!-- 由 decision.js 填充 -->
+    </div>
+  </div>
+
+  <script src="components/decision.js"></script>
+  <script src="modules/inbox.js"></script>
+  <script src="modules/next-actions.js"></script>
+  <script src="modules/projects.js"></script>
+  <script src="modules/waiting.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

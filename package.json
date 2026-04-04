@@ -1,0 +1,30 @@
+{
+  "name": "ai-manager",
+  "version": "0.1.0",
+  "description": "可执行的个人管理系统，基于《小强升职记》方法论",
+  "main": "main/main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --mac"
+  },
+  "devDependencies": {
+    "electron": "^33.0.0",
+    "electron-builder": "^25.0.0"
+  },
+  "build": {
+    "appId": "com.personal.ai-manager",
+    "productName": "AI Manager",
+    "mac": {
+      "category": "public.app-category.productivity",
+      "target": [
+        {
+          "target": "dmg",
+          "arch": ["arm64", "x64"]
+        }
+      ]
+    },
+    "directories": {
+      "output": "dist"
+    }
+  }
+}
