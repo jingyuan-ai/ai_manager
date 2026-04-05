@@ -8,36 +8,36 @@
 /* ==================== 色板 ==================== */
 :root {
   /* 主色调：与 icon 一致的暖红 */
-  --accent:           #D94035;
-  --accent-hover:     #BE3028;
-  --accent-light:     rgba(217, 64, 53, 0.10);
-  --accent-light2:    rgba(217, 64, 53, 0.06);
+  --accent:           #E04035;
+  --accent-hover:     #C43328;
+  --accent-light:     rgba(224, 64, 53, 0.09);
+  --accent-light2:    rgba(224, 64, 53, 0.05);
 
-  /* 背景：暖奶油白 */
-  --bg-primary:       #FAF6F3;
+  /* 背景：纯白 + 极浅暖灰侧边栏 */
+  --bg-primary:       #FFFFFF;
   --bg-secondary:     #FFFFFF;
-  --bg-sidebar:       #F2EBE5;
-  --bg-hover:         rgba(180, 90, 70, 0.07);
-  --bg-active:        rgba(217, 64, 53, 0.10);
+  --bg-sidebar:       #FBF7F5;
+  --bg-hover:         rgba(224, 64, 53, 0.05);
+  --bg-active:        rgba(224, 64, 53, 0.08);
 
-  /* 文字：暖棕色系 */
-  --text-primary:     #2A1F1A;
-  --text-secondary:   #8A7570;
-  --text-placeholder: #C4B4AE;
+  /* 文字 */
+  --text-primary:     #1A1210;
+  --text-secondary:   #9A8880;
+  --text-placeholder: #C8B8B2;
 
-  /* 边框：暖色调 */
-  --border:           rgba(160, 100, 80, 0.13);
-  --border-strong:    rgba(160, 100, 80, 0.22);
+  /* 边框：极浅 */
+  --border:           rgba(0, 0, 0, 0.07);
+  --border-strong:    rgba(0, 0, 0, 0.13);
 
   /* 功能色 */
-  --red:              #D94035;
-  --orange:           #E07A30;
-  --green:            #4CAF7A;
+  --red:              #E04035;
+  --orange:           #E08030;
+  --green:            #3DB870;
 
-  /* 阴影：暖棕色调 */
-  --shadow-sm:        0 1px 4px rgba(120, 60, 40, 0.08);
-  --shadow:           0 3px 12px rgba(120, 60, 40, 0.10);
-  --shadow-modal:     0 12px 40px rgba(80, 30, 20, 0.18);
+  /* 阴影：非常轻 */
+  --shadow-sm:        0 1px 3px rgba(0, 0, 0, 0.06);
+  --shadow:           0 4px 16px rgba(0, 0, 0, 0.08);
+  --shadow-modal:     0 16px 48px rgba(0, 0, 0, 0.14);
 
   /* 圆角 */
   --radius:           12px;
