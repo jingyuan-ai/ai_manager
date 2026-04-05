@@ -4,10 +4,9 @@
  */
 
 window.NextActionsModule = {
-  render(container, tasks, onToggleTag) {
+  render(container, tasks) {
     const actions = tasks.filter(t => t.status === 'next_action')
 
-    // 分组
     const groups = [
       {
         label: '🔴⚡ 重要且紧急',
@@ -46,8 +45,7 @@ window.NextActionsModule = {
     container.querySelectorAll('.done-btn[data-id]').forEach(btn => {
       btn.addEventListener('click', async (e) => {
         e.stopPropagation()
-        const id = btn.dataset.id
-        await window.electronAPI.tasks.update(id, { status: 'done' })
+        await window.electronAPI.tasks.update(btn.dataset.id, { status: 'done' })
         window.App && window.App.refresh()
       })
     })
@@ -56,8 +54,7 @@ window.NextActionsModule = {
     container.querySelectorAll('.tag-toggle-btn').forEach(btn => {
       btn.addEventListener('click', async (e) => {
         e.stopPropagation()
-        const id = btn.dataset.id
-        const tag = btn.dataset.tag
+        const { id, tag } = btn.dataset
         const task = tasks.find(t => t.id === id)
         if (!task) return
         const tags = task.tags.includes(tag)
@@ -77,27 +74,25 @@ function renderActionItem(task) {
     ? `<span style="font-size:11px;color:var(--accent)">📅 ${formatDate(task.scheduledAt)}</span>`
     : ''
 
+  // 已设置的标签：彩色实心 badge + × 号提示可点击取消
+  // 未设置的标签：虚线描边 ghost 按钮 + ＋ 前缀提示可添加
+  const importantBtn = hasImportant
+    ? `<button class="tag-toggle-btn tag-active-important" data-id="${task.id}" data-tag="important" title="点击取消「重要」">🔴 重要 ×</button>`
+    : `<button class="tag-toggle-btn tag-ghost" data-id="${task.id}" data-tag="important" title="点击标记为「重要」">＋ 重要</button>`
+
+  const urgentBtn = hasUrgent
+    ? `<button class="tag-toggle-btn tag-active-urgent" data-id="${task.id}" data-tag="urgent" title="点击取消「紧急」">⚡ 紧急 ×</button>`
+    : `<button class="tag-toggle-btn tag-ghost" data-id="${task.id}" data-tag="urgent" title="点击标记为「紧急」">＋ 紧急</button>`
+
   return `
     <div class="task-item" data-id="${task.id}">
       <button class="done-btn" data-id="${task.id}" title="标记完成"></button>
-      <div style="flex:1">
+      <div style="flex:1;min-width:0">
         <div class="task-title">${escapeHtml(task.title)}</div>
-        <div style="display:flex;gap:6px;margin-top:4px;align-items:center">
+        <div class="task-tags-row">
           ${scheduledStr}
-          <button class="tag-toggle-btn" data-id="${task.id}" data-tag="important"
-            style="background:none;border:none;cursor:pointer;padding:2px 6px;border-radius:4px;font-size:11px;font-weight:600;
-            background:${hasImportant ? 'rgba(255,59,48,0.12)' : 'var(--bg-hover)'};
-            color:${hasImportant ? 'var(--red)' : 'var(--text-secondary)'};
-            -webkit-app-region:no-drag">
-            🔴 重要
-          </button>
-          <button class="tag-toggle-btn" data-id="${task.id}" data-tag="urgent"
-            style="background:none;border:none;cursor:pointer;padding:2px 6px;border-radius:4px;font-size:11px;font-weight:600;
-            background:${hasUrgent ? 'rgba(255,149,0,0.12)' : 'var(--bg-hover)'};
-            color:${hasUrgent ? 'var(--orange)' : 'var(--text-secondary)'};
-            -webkit-app-region:no-drag">
-            ⚡ 紧急
-          </button>
+          ${importantBtn}
+          ${urgentBtn}
         </div>
       </div>
     </div>

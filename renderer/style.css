@@ -220,6 +220,60 @@ html, body {
   text-decoration: line-through;
 }
 
+/* 标签行 */
+.task-tags-row {
+  display: flex;
+  gap: 5px;
+  margin-top: 5px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* 已激活的标签：彩色实心，点击可取消 */
+.tag-active-important, .tag-active-urgent {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  -webkit-app-region: no-drag;
+  transition: opacity 0.1s;
+}
+.tag-active-important {
+  background: rgba(255, 59, 48, 0.13);
+  color: var(--red);
+}
+.tag-active-urgent {
+  background: rgba(255, 149, 0, 0.13);
+  color: var(--orange);
+}
+.tag-active-important:hover, .tag-active-urgent:hover {
+  opacity: 0.65;
+}
+
+/* 未激活的标签：虚线描边 ghost 按钮，点击可添加 */
+.tag-ghost {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  background: transparent;
+  color: var(--text-placeholder);
+  border: 1px dashed var(--border-strong);
+  cursor: pointer;
+  -webkit-app-region: no-drag;
+  transition: color 0.1s, border-color 0.1s;
+}
+.tag-ghost:hover {
+  color: var(--text-secondary);
+  border-color: var(--text-secondary);
+}
+
 .task-item .task-meta {
   font-size: 11.5px;
   color: var(--text-secondary);
