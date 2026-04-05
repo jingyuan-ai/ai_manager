@@ -1,6 +1,12 @@
-const { app, BrowserWindow, globalShortcut, ipcMain } = require('electron')
+const { app, BrowserWindow, globalShortcut } = require('electron')
 const path = require('path')
 const ipc = require('./ipc')
+
+// 开发模式：彻底禁用 Chromium 磁盘缓存，确保 CSS/JS 每次都从磁盘重新读取
+// 必须在 app ready 之前调用
+if (!app.isPackaged) {
+  app.commandLine.appendSwitch('disable-http-cache')
+}
 
 let mainWindow = null
 
@@ -51,13 +57,7 @@ function registerShortcuts() {
   }
 }
 
-app.whenReady().then(async () => {
-  // 开发模式：清除渲染进程缓存，确保 CSS/JS 改动立即生效
-  if (!app.isPackaged) {
-    const { session } = require('electron')
-    await session.defaultSession.clearCache()
-  }
-
+app.whenReady().then(() => {
   // 开发模式下设置 Dock 图标（打包后由 .app bundle 自动处理）
   // dock.setIcon 需要 PNG，不支持 .icns
   if (!app.isPackaged && app.dock) {
