@@ -2,13 +2,31 @@ const { app } = require('electron')
 const path = require('path')
 const fs = require('fs')
 
-// 懒加载：app.getPath 只能在 app ready 后调用
-let _dataFile = null
-function getDataFile() {
-  if (!_dataFile) _dataFile = path.join(app.getPath('userData'), 'tasks.json')
-  return _dataFile
+/**
+ * 数据目录解析规则（优先级从高到低）：
+ *  1. 环境变量 AI_MANAGER_DATA_DIR（多机同步时可指向共享路径）
+ *  2. 开发模式：项目根目录下的 data/（app.getAppPath() 即项目根）
+ *  3. 打包后：.app 文件同级目录下的 data/（方便打包分发时数据跟随）
+ */
+let _dataDir = null
+function getDataDir() {
+  if (_dataDir) return _dataDir
+  if (process.env.AI_MANAGER_DATA_DIR) {
+    _dataDir = process.env.AI_MANAGER_DATA_DIR
+  } else if (!app.isPackaged) {
+    // 开发模式：项目根目录/data
+    _dataDir = path.join(app.getAppPath(), 'data')
+  } else {
+    // 打包后：.app 文件所在目录/data
+    _dataDir = path.join(path.dirname(app.getPath('exe')), 'data')
+  }
+  fs.mkdirSync(_dataDir, { recursive: true })
+  return _dataDir
 }
-const DATA_FILE = null // 不再直接用，改用 getDataFile()
+
+function getDataFile() {
+  return path.join(getDataDir(), 'tasks.json')
+}
 
 const EMPTY_STORE = {
   tasks: [],
@@ -97,4 +115,4 @@ function deleteTask(id) {
   writeStore(store)
 }
 
-module.exports = { getAllTasks, createTask, updateTask, deleteTask }
+module.exports = { getAllTasks, createTask, updateTask, deleteTask, getDataDir }

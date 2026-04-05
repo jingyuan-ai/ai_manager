@@ -21,13 +21,33 @@ npm run build  # 打包为 macOS .app（输出到 dist/）
 - `Cmd+1/2/3/4`：切换视图（工作篮/下一步行动/项目/等待）
 - `Escape`：关闭判定面板
 
-## Planned Tech Stack
+## 目录结构与数据隔离
 
-- **Frontend:** Electron (desktop app)
-- **Storage:** SQLite or JSON (local only, no backend)
-- **No server-side dependency**
+```
+ai_manager/
+├── main/          ← 主进程代码（Electron/Node.js）
+├── renderer/      ← 渲染进程代码（HTML/CSS/JS）
+├── data/          ← 持久化数据（与代码隔离，可单独同步）
+│   └── tasks.json
+├── package.json
+└── ...
+```
 
-The project is currently in the **PRD/planning phase** — `prd.md` is the sole source of truth. No source code exists yet.
+**数据目录解析优先级**（`main/store.js`）：
+1. 环境变量 `AI_MANAGER_DATA_DIR`（优先，可指向任意路径，适合多机同步）
+2. 开发模式（`npm start`）：项目根目录下的 `data/`
+3. 打包后：`.app` 文件同级目录下的 `data/`
+
+**多机同步方案**：
+- 方式一：用 git 同步 `data/` 目录（删除 `.gitignore` 中的注释行即可纳入 git）
+- 方式二：设置 `AI_MANAGER_DATA_DIR` 指向 iCloud/Dropbox 等同步目录
+
+升级代码时（`git pull`）不影响 `data/`，数据完全独立。
+
+## Tech Stack
+
+- **Frontend:** Electron（macOS 桌面）
+- **Storage:** JSON 文件，本地存储，无后端
 
 ## Architecture
 
