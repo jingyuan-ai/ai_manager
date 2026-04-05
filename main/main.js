@@ -1,5 +1,6 @@
 const { app, BrowserWindow, globalShortcut } = require('electron')
 const path = require('path')
+const fs = require('fs')
 const ipc = require('./ipc')
 
 // 开发模式：彻底禁用 Chromium 磁盘缓存，确保 CSS/JS 每次都从磁盘重新读取
@@ -27,6 +28,15 @@ function createWindow() {
   })
 
   mainWindow.loadFile(path.join(__dirname, '../renderer/index.html'))
+
+  // 开发模式：直接从磁盘读 CSS 并注入，彻底绕过文件缓存
+  if (!app.isPackaged) {
+    mainWindow.webContents.on('did-finish-load', () => {
+      const cssPath = path.join(__dirname, '../renderer/style.css')
+      const css = fs.readFileSync(cssPath, 'utf8')
+      mainWindow.webContents.insertCSS(css)
+    })
+  }
 
   // macOS 惯例：关闭窗口时隐藏，不退出
   mainWindow.on('close', (e) => {
