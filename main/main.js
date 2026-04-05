@@ -52,6 +52,11 @@ function registerShortcuts() {
 }
 
 app.whenReady().then(() => {
+  // 开发模式下设置 Dock 图标（打包后由 .app bundle 自动处理）
+  if (!app.isPackaged && app.dock) {
+    app.dock.setIcon(path.join(__dirname, '../assets/icon.icns'))
+  }
+
   ipc.registerHandlers()
   // 启动时打印数据目录，方便确认存储位置
   const store = require('./store')
