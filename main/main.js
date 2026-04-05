@@ -1,4 +1,4 @@
-const { app, BrowserWindow, globalShortcut } = require('electron')
+const { app, BrowserWindow, globalShortcut, nativeTheme } = require('electron')
 const path = require('path')
 const fs = require('fs')
 const ipc = require('./ipc')
@@ -18,7 +18,7 @@ function createWindow() {
     minWidth: 800,
     minHeight: 500,
     titleBarStyle: 'hiddenInset',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: nativeTheme.shouldUseDarkColors ? '#1E1610' : '#FFFFFF',
     icon: path.join(__dirname, '../assets/icon.icns'),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
