@@ -51,7 +51,13 @@ function registerShortcuts() {
   }
 }
 
-app.whenReady().then(() => {
+app.whenReady().then(async () => {
+  // 开发模式：清除渲染进程缓存，确保 CSS/JS 改动立即生效
+  if (!app.isPackaged) {
+    const { session } = require('electron')
+    await session.defaultSession.clearCache()
+  }
+
   // 开发模式下设置 Dock 图标（打包后由 .app bundle 自动处理）
   // dock.setIcon 需要 PNG，不支持 .icns
   if (!app.isPackaged && app.dock) {
