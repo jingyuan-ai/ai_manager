@@ -20,6 +20,9 @@
     </filter>
   </defs>
 
+  <!-- 整体缩小到 92%，四周留出约 40px 透明边距，对齐 macOS 图标视觉规范 -->
+  <g transform="translate(41, 41) scale(0.92)">
+
   <!-- 背景圆角方块 -->
   <rect width="1024" height="1024" rx="220" ry="220" fill="url(#bg)"/>
 
@@ -78,4 +81,6 @@
   <circle cx="512" cy="900" r="22" fill="white" opacity="0.90"/>
   <circle cx="420" cy="895" r="14" fill="white" opacity="0.55"/>
   <circle cx="604" cy="895" r="14" fill="white" opacity="0.55"/>
+
+  </g> <!-- end scale group -->
 </svg>
