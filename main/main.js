@@ -53,8 +53,9 @@ function registerShortcuts() {
 
 app.whenReady().then(() => {
   // 开发模式下设置 Dock 图标（打包后由 .app bundle 自动处理）
+  // dock.setIcon 需要 PNG，不支持 .icns
   if (!app.isPackaged && app.dock) {
-    app.dock.setIcon(path.join(__dirname, '../assets/icon.icns'))
+    app.dock.setIcon(path.join(__dirname, '../assets/iconset/icon_512x512.png'))
   }
 
   ipc.registerHandlers()
