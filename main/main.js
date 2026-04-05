@@ -18,7 +18,7 @@ function createWindow() {
     minWidth: 800,
     minHeight: 500,
     titleBarStyle: 'hiddenInset',
-    backgroundColor: nativeTheme.shouldUseDarkColors ? '#1E1610' : '#FFFFFF',
+    backgroundColor: '#FFFFFF',
     icon: path.join(__dirname, '../assets/icon.icns'),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
@@ -68,6 +68,9 @@ function registerShortcuts() {
 }
 
 app.whenReady().then(() => {
+  // 强制使用浅色模式，不跟随系统深色主题
+  nativeTheme.themeSource = 'light'
+
   // 开发模式下设置 Dock 图标（打包后由 .app bundle 自动处理）
   // dock.setIcon 需要 PNG，不支持 .icns
   if (!app.isPackaged && app.dock) {
