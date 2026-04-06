@@ -10,7 +10,8 @@ const MODULES = {
   'inbox': window.InboxModule,
   'next-actions': window.NextActionsModule,
   'projects': window.ProjectsModule,
-  'waiting': window.WaitingModule
+  'waiting': window.WaitingModule,
+  'someday': window.SomedayModule
 }
 
 // ==================== 初始化 ====================
@@ -55,15 +56,17 @@ function switchView(view) {
 }
 
 function updateBadges() {
-  const inboxCount = allTasks.filter(t => t.status === 'inbox').length
-  const nextCount = allTasks.filter(t => t.status === 'next_action').length
+  const inboxCount   = allTasks.filter(t => t.status === 'inbox').length
+  const nextCount    = allTasks.filter(t => t.status === 'next_action').length
   const projectsCount = allTasks.filter(t => t.status === 'project').length
   const waitingCount = allTasks.filter(t => t.status === 'waiting').length
+  const somedayCount = allTasks.filter(t => t.status === 'someday' || t.status === 'reference').length
 
   setBadge('inbox-badge', inboxCount)
   setBadge('next-badge', nextCount)
   setBadge('projects-badge', projectsCount)
   setBadge('waiting-badge', waitingCount)
+  setBadge('someday-badge', somedayCount)
 }
 
 function setBadge(id, count) {
@@ -95,6 +98,9 @@ function renderView(view) {
       module.render(content, allTasks)
       break
     case 'waiting':
+      module.render(content, allTasks)
+      break
+    case 'someday':
       module.render(content, allTasks)
       break
   }
