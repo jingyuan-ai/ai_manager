@@ -1,6 +1,7 @@
 node_modules/
 dist/
 .DS_Store
+.claude/
 
 # 数据目录：tasks.json 由用户自行决定是否加入版本控制
 # 如需同步数据到其他主机，可删除下面这行，将 data/ 纳入 git
