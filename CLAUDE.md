@@ -18,7 +18,7 @@ npm run build  # 打包为 macOS .app（输出到 dist/）
 
 键盘快捷键（应用内）：
 - `Cmd+Shift+Space`：全局快捷键，从任何应用唤起窗口并聚焦 Inbox 输入框
-- `Cmd+1/2/3/4`：切换视图（工作篮/下一步行动/项目/等待）
+- `Cmd+1~6`：切换视图（工作篮/下一步行动/项目/等待/将来某时/已归档）
 - `Escape`：关闭判定面板
 
 ## 目录结构与数据隔离
@@ -43,6 +43,12 @@ ai_manager/
 - 方式二：设置 `AI_MANAGER_DATA_DIR` 指向 iCloud/Dropbox 等同步目录
 
 升级代码时（`git pull`）不影响 `data/`，数据完全独立。
+
+**归档拆分**（`main/store.js`）：
+- `tasks.json`：活跃任务（inbox / next_action / project / waiting / someday / reference）
+- `archive_YYYY_Qn.json`：已完成 / 已删除任务，按季度切分。状态变 `done`/`deleted` 时自动迁入。
+- 归档任务额外字段：`completedAt`（完成/删除时间）、`completedBy`（完成人，`done` 才有；waiting 收回时记 assignee，否则取 `AI_MANAGER_OWNER` 环境变量或默认「我」）
+- 启动时自动一次性把 `tasks.json` 中残留的 done/deleted 任务迁移到归档
 
 ## Tech Stack
 

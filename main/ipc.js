@@ -17,6 +17,10 @@ function registerHandlers() {
   ipcMain.handle('tasks:delete', (_, id) => {
     store.deleteTask(id)
   })
+
+  ipcMain.handle('tasks:getArchive', () => {
+    return store.getArchivedTasks()
+  })
 }
 
 module.exports = { registerHandlers }

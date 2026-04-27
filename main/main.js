@@ -81,6 +81,8 @@ app.whenReady().then(() => {
   // 启动时打印数据目录，方便确认存储位置
   const store = require('./store')
   console.log('[AI Manager] 数据目录:', store.getDataDir())
+  // 一次性迁移：把早期遗留在 tasks.json 中的 done/deleted 任务移到归档
+  store.migrateLegacyArchived()
   createWindow()
   registerShortcuts()
 

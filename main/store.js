@@ -15,6 +15,10 @@ const fs = require('fs')
 
 const ARCHIVE_STATUSES = new Set(['done', 'deleted'])
 
+// 默认完成人：环境变量 AI_MANAGER_OWNER 优先，否则用「我」
+// 多用户场景可通过环境变量切换，或将来从设置文件读取
+const DEFAULT_OWNER = process.env.AI_MANAGER_OWNER || '我'
+
 let _dataDir = null
 function getDataDir() {
   if (_dataDir) return _dataDir
@@ -103,6 +107,8 @@ function createTask(fields) {
     followUpAt: null,
     notes: null,
     parentProjectId: null,
+    completedAt: null,
+    completedBy: null,
     ...fields
   }
   store.tasks.push(task)
@@ -119,18 +125,31 @@ function updateTask(id, fields) {
     return updateArchiveTask(id, fields)
   }
 
+  const prev = store.tasks[idx]
   const updated = {
-    ...store.tasks[idx],
+    ...prev,
     ...fields,
     id,
     updatedAt: new Date().toISOString()
   }
 
+  // 状态变为 done/deleted 时补齐归档元数据
+  // - completedAt：完成/删除时间，方便后续统计
+  // - completedBy：done 才算"完成"，由谁完成（waiting 任务被收回归 assignee，其余归 owner）；deleted 不算完成
+  if (ARCHIVE_STATUSES.has(updated.status) && !ARCHIVE_STATUSES.has(prev.status)) {
+    if (!updated.completedAt) updated.completedAt = updated.updatedAt
+    if (updated.status === 'done' && !updated.completedBy) {
+      updated.completedBy = prev.status === 'waiting' && prev.assignee
+        ? prev.assignee
+        : DEFAULT_OWNER
+    }
+  }
+
   if (ARCHIVE_STATUSES.has(updated.status)) {
-    // 状态变为 done/deleted → 移入当前季度归档文件
+    // 状态变为 done/deleted → 移入对应季度归档文件（用 completedAt 决定季度）
     store.tasks.splice(idx, 1)
     writeStore(store)
-    const archiveFile = getArchiveFile(new Date())
+    const archiveFile = getArchiveFile(new Date(updated.completedAt))
     const archive = readArchive(archiveFile)
     archive.tasks.push(updated)
     writeArchive(archiveFile, archive)
@@ -177,12 +196,19 @@ function deleteTask(id) {
   const store = readStore()
   const idx = store.tasks.findIndex(t => t.id === id)
   if (idx !== -1) {
-    const task = { ...store.tasks[idx], status: 'deleted', updatedAt: new Date().toISOString() }
+    const now = new Date().toISOString()
+    const task = {
+      ...store.tasks[idx],
+      status: 'deleted',
+      updatedAt: now,
+      completedAt: store.tasks[idx].completedAt || now
+    }
     store.tasks.splice(idx, 1)
     writeStore(store)
-    const archive = readArchive()
+    const archiveFile = getArchiveFile(new Date(task.completedAt))
+    const archive = readArchive(archiveFile)
     archive.tasks.push(task)
-    writeArchive(archive)
+    writeArchive(archiveFile, archive)
     return
   }
 
@@ -195,4 +221,69 @@ function deleteTask(id) {
   }
 }
 
-module.exports = { getAllTasks, createTask, updateTask, deleteTask, getDataDir }
+// ==================== 归档读取与历史数据迁移 ====================
+
+// 读取所有季度归档文件，按 completedAt 倒序合并
+function getArchivedTasks() {
+  const dir = getDataDir()
+  if (!fs.existsSync(dir)) return []
+  const files = fs.readdirSync(dir).filter(f => /^archive_\d{4}_Q[1-4]\.json$/.test(f))
+  const all = []
+  for (const f of files) {
+    const data = readFile(path.join(dir, f))
+    all.push(...data.tasks)
+  }
+  return all.sort((a, b) => {
+    const ta = new Date(a.completedAt || a.updatedAt).getTime()
+    const tb = new Date(b.completedAt || b.updatedAt).getTime()
+    return tb - ta
+  })
+}
+
+// 启动时一次性迁移：把 tasks.json 里早期残留的 done/deleted 任务移进对应季度归档
+// 同时为缺失的 completedAt/completedBy 字段补默认值
+function migrateLegacyArchived() {
+  const store = readStore()
+  const stays = []
+  const moves = []
+  for (const t of store.tasks) {
+    if (ARCHIVE_STATUSES.has(t.status)) {
+      const completedAt = t.completedAt || t.updatedAt || t.createdAt || new Date().toISOString()
+      const completedBy = t.completedBy != null
+        ? t.completedBy
+        : (t.status === 'done' ? (t.assignee || DEFAULT_OWNER) : null)
+      moves.push({ ...t, completedAt, completedBy })
+    } else {
+      stays.push(t)
+    }
+  }
+  if (moves.length === 0) return 0
+
+  // 按季度分桶写入
+  const buckets = new Map()
+  for (const t of moves) {
+    const file = getArchiveFile(new Date(t.completedAt))
+    if (!buckets.has(file)) buckets.set(file, [])
+    buckets.get(file).push(t)
+  }
+  for (const [file, items] of buckets) {
+    const archive = readArchive(file)
+    archive.tasks.push(...items)
+    writeArchive(file, archive)
+  }
+
+  store.tasks = stays
+  writeStore(store)
+  console.log(`[AI Manager] 迁移 ${moves.length} 条历史归档任务`)
+  return moves.length
+}
+
+module.exports = {
+  getAllTasks,
+  createTask,
+  updateTask,
+  deleteTask,
+  getDataDir,
+  getArchivedTasks,
+  migrateLegacyArchived
+}

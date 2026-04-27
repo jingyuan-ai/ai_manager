@@ -11,7 +11,8 @@ const MODULES = {
   'next-actions': window.NextActionsModule,
   'projects': window.ProjectsModule,
   'waiting': window.WaitingModule,
-  'someday': window.SomedayModule
+  'someday': window.SomedayModule,
+  'archive': window.ArchiveModule
 }
 
 // ==================== 初始化 ====================
@@ -67,6 +68,8 @@ function updateBadges() {
   setBadge('projects-badge', projectsCount)
   setBadge('waiting-badge', waitingCount)
   setBadge('someday-badge', somedayCount)
+  // 归档不显示角标（历史数据数量没有提醒意义）
+  setBadge('archive-badge', 0)
 }
 
 function setBadge(id, count) {
@@ -102,6 +105,10 @@ function renderView(view) {
       break
     case 'someday':
       module.render(content, allTasks)
+      break
+    case 'archive':
+      // 归档视图自己从主进程加载数据，不依赖 allTasks
+      module.render(content)
       break
   }
 }
@@ -170,11 +177,11 @@ function showToast(message) {
 // ==================== 键盘快捷键 ====================
 
 document.addEventListener('keydown', (e) => {
-  // Cmd+1~4 切换视图
+  // Cmd+1~6 切换视图
   if (e.metaKey && !e.shiftKey) {
-    const views = ['inbox', 'next-actions', 'projects', 'waiting']
+    const views = ['inbox', 'next-actions', 'projects', 'waiting', 'someday', 'archive']
     const num = parseInt(e.key)
-    if (num >= 1 && num <= 4) {
+    if (num >= 1 && num <= views.length) {
       e.preventDefault()
       switchView(views[num - 1])
     }
